@@ -1,0 +1,36 @@
+name = "nattodms-recife"
+pages_build_output_dir = "public"
+compatibility_date = "2026-08-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nattodms-recife-rotadb"
+database_id = "COLE-AQUI-O-ID-DO-D1-nattodms-recife-rotadb"
+migrations_dir = "migrations"
+
+
+[vars]
+# Integração com o NATTO Entregas. Mantenha false até validar a leitura.
+DMS_APP_WRITE_ENABLED = "false"
+# DMS_ROTA_APP_SECRET deve ser cadastrado como Secret no painel Cloudflare; nunca commitar o valor.
+PROTECTSAT_ENABLED = "true"
+PROTECTSAT_BASE_URL = "https://api.protectsat.com.br/wsprotect/protect.php"
+LINCROS_BASE_URL = "https://notaro-tracking.lincros.com"
+REVERSE_GEOCODING_BASE_URL = "https://nominatim.openstreetmap.org/reverse"
+# LINCROS_API_KEY, LINCROS_WS_USER e LINCROS_WS_PASSWORD devem permanecer como Secrets no Cloudflare.
+PROTECTSAT_FUNCAO = "grid_monitoramento"
+VALHALLA_BASE_URL = "https://valhalla1.openstreetmap.de"
+ROUTING_BASE_URL = "https://router.project-osrm.org"
+DEPARTURE_GEOFENCE_NAME = "NOTARO ALIMENTOS - RECIFE/PE"
+DEPARTURE_GEOFENCE_NAMES = "NOTARO ALIMENTOS LTDA. - RECIFE/PE|NOTARO ALIMENTOS - RECIFE/PE"
+DEPARTURE_GEOFENCE_RADIUS_METERS = "120"
+DEPARTURE_GPS_MAX_AGE_MINUTES = "20"
+DEPARTURE_GPS_TRANSITION_LOOKBACK_MINUTES = "720"
+DEPARTURE_GPS_EXIT_BUFFER_METERS = "40"
+DEPARTURE_GPS_EARLY_WINDOW_MINUTES = "60"
+DEPARTURE_GPS_LATE_WINDOW_MINUTES = "720"
+DEPARTURE_GPS_OUTSIDE_CONFIRMATIONS = "2"
+RETURN_GEOFENCE_NAMES = "NOTARO ALIMENTOS LTDA. - RECIFE/PE|NOTARO ALIMENTOS - RECIFE/PE"
+RETURN_GEOFENCE_RADIUS_METERS = "120"
+# Configure PROTECTSAT_CHAVE como secret/variável protegida no Cloudflare.
+# Opcional: CORS_ALLOWED_ORIGINS = "https://seu-dominio.exemplo"

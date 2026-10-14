@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const pkg=JSON.parse(fs.readFileSync(new URL('../package.json',import.meta.url),'utf8'));
+const html=fs.readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
+const ui=fs.readFileSync(new URL('../public/assets/route.js',import.meta.url),'utf8');
+assert.equal(pkg.version,'1.0.158');
+assert.match(html,/dms-rota-v1141-login-sessao-20260924/);
+assert.match(ui,/const leftW=Math\.round\(\(cardW-pad\*2-12\)\*\.36\)/,'card mantém coluna esquerda para rota/placa');
+assert.match(ui,/drawText\(safe\(item\.placa\)/,'placa deve seguir visível');
+assert.match(ui,/drawWrapped\(safe\(item\.ajudantes\)/,'ajudantes devem seguir visíveis');
+assert.match(ui,/const departureText=pending\?`Prog\. \$\{formatShortDt\(departureValue\)\}`:formatShortDt\(departureValue\)/,'saída programada deve ser identificada em linha única');
+assert.match(ui,/drawText\(`OC \$\{ocValue\}`/,'OC deve ser identificada em linha única, sem título separado');
+assert.doesNotMatch(ui,/const departureLabel=/,'não deve reservar faixa para título SAÍDA separado');
+assert.doesNotMatch(ui,/drawText\('OC'/,'não deve reservar título OC separado');
+console.log('OK: v1.0.78 mantém os campos essenciais nos cards sem faixas de título sobrepostas.');

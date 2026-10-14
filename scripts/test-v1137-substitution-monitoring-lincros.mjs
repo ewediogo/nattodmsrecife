@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {lincrosReferencePlateFromTrip} from '../functions/_lib/lincros.js';
+const pkg=JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8'));
+const monitor=await readFile(new URL('../functions/_lib/monitoring.js',import.meta.url),'utf8');
+const departure=await readFile(new URL('../functions/_lib/departure.js',import.meta.url),'utf8');
+const api=await readFile(new URL('../functions/api/lincros.js',import.meta.url),'utf8');
+const index=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
+assert.equal(pkg.version,'1.0.158');
+assert.equal(lincrosReferencePlateFromTrip({placa:'NOVA1A11',trocas_recursos:[{campo:'VEÍCULO',anterior:'OLD2B22',novo:'NOVA1A11'}]}),'OLD2B22','Lincros deve usar placa anterior quando houve substituição.');
+assert.equal(lincrosReferencePlateFromTrip({placa:'ABC1D23'}),'ABC1D23','Sem substituição, deve usar a placa atual.');
+assert(monitor.includes('enrichMonitoringWithDepartureResources'),'Monitoramento deve reconciliar equipe efetiva da Saída.');
+assert(monitor.includes("monitoringEffectiveResource(departure,'MOTORISTA'"),'Motorista efetivo deve prevalecer no Monitoramento, inclusive pelo histórico de troca.');
+assert(departure.includes('merged.placa_lincros=merged.placa_original||merged.placa'),'Saída deve preservar placa de referência Lincros.');
+assert(api.includes('lincrosReferencePlateFromTrip(Object.keys(departure).length?departure:data)'),'Sincronização forçada deve resolver placa pela Saída.');
+assert(index.includes('dms-rota-v1141-login-sessao-20260924'),'Frontend deve invalidar cache.');
+console.log('OK v1.0.141 - substituição sincroniza motorista efetivo e mantém placa original na Lincros.');

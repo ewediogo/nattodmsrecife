@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+const lib=fs.readFileSync(new URL('../functions/_lib/lincros.js',import.meta.url),'utf8');
+const api=fs.readFileSync(new URL('../functions/api/lincros.js',import.meta.url),'utf8');
+const route=fs.readFileSync(new URL('../public/assets/route.js',import.meta.url),'utf8');
+const assert=(cond,msg)=>{if(!cond)throw new Error(msg);};
+assert(lib.includes("rootDone.length?rootDone.reduce"),'Contagem deve priorizar QtEntregaRealizada da raiz.');
+assert(lib.includes("OC_NF_DETAIL_MATCH"),'Fallback OC/NF para múltiplas rotas ausente.');
+assert(lib.includes("/swagger(?:\\/|$)"),'Normalização de URL Swagger ausente.');
+assert(api.includes("view==='config'"),'Diagnóstico de configuração Lincros ausente.');
+assert(route.includes('timeoutMs:65000'),'Detalhe Lincros precisa aguardar fluxo Jornada + StatusRota.');
+console.log('OK v1.0.98 Lincros diagnostics');

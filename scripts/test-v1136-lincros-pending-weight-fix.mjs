@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {plannedWeightFromDelivery} from '../functions/_lib/lincros.js';
+const pkg=JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8'));
+const lib=await readFile(new URL('../functions/_lib/lincros.js',import.meta.url),'utf8');
+const index=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
+assert.equal(pkg.version,'1.0.158');
+assert.equal(plannedWeightFromDelivery({PesoEntrega:325.4,PesoEntregue:null}),325.4,'PesoEntrega deve ser tratado como peso planejado.');
+assert.equal(plannedWeightFromDelivery({VlPesoEntrega:'1.234,56'}),1234.56,'Formato pt-BR deve ser convertido.');
+assert.equal(plannedWeightFromDelivery({PesoEntregue:99.9,PesoDevolvido:10}),null,'Pesos realizados não podem virar peso previsto.');
+assert.equal(plannedWeightFromDelivery({Pedidos:[{NotasFiscais:[{PesoNotaFiscal:120.5},{VlPesoEntrega:80.25}]}]}),200.75,'Pesos de NFs da mesma entrega devem ser somados.');
+assert.equal(plannedWeightFromDelivery({Pedidos:[{DadosPedido:{PesoTotal:'250,50'}}]}),250.5,'Fallback aninhado de pedido deve funcionar.');
+assert(lib.includes('if(/ENTREGUE|DEVOLVID|REALIZ|RETORN|REJEIT|RECUS/.test(nk))continue;'),'Filtro não pode descartar PesoEntrega.');
+assert(index.includes('dms-rota-v1141-login-sessao-20260924'),'Frontend deve invalidar cache da versão anterior.');
+console.log('OK v1.0.136 - peso previsto de entregas pendentes corrigido.');

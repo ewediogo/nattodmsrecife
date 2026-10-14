@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const index=fs.readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
+const footer=index.slice(index.indexOf('<footer class="app-footer'),index.indexOf('</footer>'));
+assert(footer.includes('NATTO DMS • RECIFE/PE'));
+assert(footer.includes('Notaro Alimentos LTDA. - RECIFE/PE • Avenida da Recuperação, Km 56,2, S/N, Guabiraba, Recife - PE, 52291-800 • 2026 © Todos os direitos reservados.'));
+assert(!footer.includes('Cloudflare Pages'));
+console.log('OK v1168 - rodapé institucional Natto DMS / Notaro Alimentos.');
+const brand=index.slice(index.indexOf('<div class="sidebar-brand-copy">'),index.indexOf('</div>',index.indexOf('<div class="sidebar-brand-copy">')));
+assert(brand.includes('<strong>NATTO DMS</strong>')&&brand.includes('<small>Notaro Alimentos - Recife/PE</small>'),'marca do menu lateral');
+const css=fs.readFileSync(new URL('../public/assets/app.css',import.meta.url),'utf8');
+assert(css.includes('.sidebar-brand-copy small{font-size:8.5px;letter-spacing:0;text-transform:none;white-space:nowrap}'),'subtítulo cabe na mesma linha');
+console.log('OK v1168 - marca do menu lateral NATTO DMS / Notaro Alimentos - Recife/PE.');
+assert(index.includes('<title>Natto DMS - Recife</title>'),'título da aba do navegador');
+console.log('OK v1168 - título da aba Natto DMS - Recife.');

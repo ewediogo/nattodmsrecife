@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+const route=fs.readFileSync(new URL('../public/assets/route.js',import.meta.url),'utf8');
+const api=fs.readFileSync(new URL('../functions/api/lincros.js',import.meta.url),'utf8');
+const worker=fs.readFileSync(new URL('../public/_worker.js',import.meta.url),'utf8');
+const index=fs.readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
+const assert=(c,m)=>{if(!c)throw new Error(m);};
+assert(route.includes('return primary||lincrosPos||null'),'ProtectSat precisa sempre ter prioridade sobre Lincros.');
+assert(route.includes('lincrosPayload.runtimeConfigured===true'),'Frontend deve bloquear cache Lincros quando a API key não existe no runtime.');
+assert(api.includes('runtimeConfigured=Boolean(String(env.LINCROS_API_KEY'),'Endpoint deve informar configuração real do runtime.');
+assert(api.includes('records=runtimeConfigured?active.map'),'Cache Lincros não pode alimentar operação sem secret no runtime.');
+assert(worker.includes("const VERSION='1.0.158'"),'Worker deve publicar versão 1.0.101.');
+assert(index.includes('dms-rota-v1141-login-sessao-20260924'),'Assets precisam de revisão nova.');
+console.log('OK v1.0.103: ProtectSat prioritário e Lincros isolada sem secret no runtime.');

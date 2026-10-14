@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+const root=new URL('..',import.meta.url).pathname.replace(/\/$/,'');
+const app=fs.readFileSync(`${root}/public/assets/app.js`,'utf8');
+const css=fs.readFileSync(`${root}/public/assets/app.css`,'utf8');
+const worker=fs.readFileSync(`${root}/public/_worker.js`,'utf8');
+const pkg=JSON.parse(fs.readFileSync(`${root}/package.json`,'utf8'));
+const assert=(c,m)=>{if(!c)throw new Error(m);};
+assert(pkg.version==='1.0.158','Pacote deve ser v1.0.126.');
+assert(worker.includes("const VERSION='1.0.158';"),'Worker deve publicar v1.0.126.');
+assert(app.includes('function departureReplacementInfo'),'Helper de substituição ausente.');
+assert(app.includes('placa_substituida'),'CSV precisa exportar placa substituída.');
+assert(app.includes('motorista_substituido'),'CSV precisa exportar motorista substituído.');
+assert(app.includes('ajudante_1_substituido')&&app.includes('ajudante_2_substituido'),'CSV precisa exportar ajudantes substituídos.');
+assert(app.includes('Motorista substituído:')&&app.includes('Ajudante(s) substituído(s):'),'Controle de Saída precisa sinalizar substituições de equipe.');
+assert(app.includes('Substituiu: ${esc(repl.vehicle.previous)}'),'PDF precisa mostrar placa substituída.');
+assert(css.includes('.departure-substitution'),'Estilo de destaque de substituição ausente.');
+console.log('OK v1.0.126: recursos substituídos exibidos no Controle de Saída, busca, CSV e PDF.');

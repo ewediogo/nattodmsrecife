@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const api=fs.readFileSync(new URL('../functions/api/colaboradores.js',import.meta.url),'utf8');
+const app=fs.readFileSync(new URL('../public/assets/app.js',import.meta.url),'utf8');
+assert(api.includes("listOperationalResourceStatus(env.DB, today)"));
+const cat=fs.readFileSync(new URL('../functions/api/catalogo.js',import.meta.url),'utf8');
+assert(cat.includes("status_operacional:live.get"));
+assert(app.includes("catalogo?type=vehicles&operacional=1")&&app.includes("operacional=1`"));
+assert(api.includes('status_operacional:live'));
+assert(app.includes('record.status_operacional||record[field]'));
+console.log('OK v1161 - lista de colaboradores exibe status operacional (férias/rota) e não o status transitório do cadastro.');

@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+const lib=fs.readFileSync(new URL('../functions/_lib/lincros.js',import.meta.url),'utf8');
+const ind=fs.readFileSync(new URL('../functions/_lib/indicators.js',import.meta.url),'utf8');
+const route=fs.readFileSync(new URL('../public/assets/route.js',import.meta.url),'utf8');
+const assert=(c,m)=>{if(!c)throw new Error(m);};
+assert(lib.includes('ApontamentoDentroDoRaio')&&lib.includes('WITHIN_RADIUS'),'Lincros deve persistir apontamento dentro do raio.');
+assert(ind.includes("'3/4':5.80")&&ind.includes('TOCO:5.60')&&ind.includes('TRUCK:5.30')&&ind.includes('BITRUCK:4.80'),'Tabela de custo/km ausente.');
+assert(ind.includes('AG1:0.441')&&ind.includes('AG2:0.441')&&ind.includes('SRT:0.945')&&ind.includes('AL:0.91')&&ind.includes('PB:0.56'),'Limites de viabilidade ausentes.');
+assert(ind.includes('ocupacao_percentual')&&ind.includes('custo_por_kg')&&ind.includes('sequenceCompliancePercent')&&ind.includes('radiusCompliancePercent'),'Indicadores econômicos/execução ausentes.');
+assert(route.includes('Cumprimento da sequência')&&route.includes('Apontamentos dentro do raio')&&route.includes('Custo acumulado da viagem'),'Detalhe do monitoramento incompleto.');
+assert(route.includes('Custos, ocupação e execução das entregas'),'Painel na aba Indicadores ausente.');
+assert(route.includes('Number(value)/1000'),'Distância Lincros deve ser convertida de metros para km.');
+console.log('OK v1.0.126: custos, ocupação, sequência, raio e km validados.');

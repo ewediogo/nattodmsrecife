@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const route=fs.readFileSync(new URL('../public/assets/route.js',import.meta.url),'utf8');
+const returnsLib=fs.readFileSync(new URL('../functions/_lib/return.js',import.meta.url),'utf8');
+const returnsApi=fs.readFileSync(new URL('../functions/api/returns.js',import.meta.url),'utf8');
+const index=fs.readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
+const pkg=JSON.parse(fs.readFileSync(new URL('../package.json',import.meta.url),'utf8'));
+assert.equal(pkg.version,'1.0.158');
+assert(route.includes('Dados das entregas · Lincros'),'Histórico concluído deve exibir as entregas da Lincros.');
+assert(route.includes('return-history-lincros'),'Modal do Histórico deve possuir o bloco de detalhe Lincros.');
+assert(route.includes('/api/lincros?scheduleId=${encodeURIComponent(scheduleId)}&sync=1&force=1'),'Ao abrir o histórico deve forçar nova sincronização da Lincros.');
+assert(route.includes('Reconsultando a Lincros nas viagens concluídas mais recentes exibidas'),'Atualizar deve revalidar viagens concluídas.');
+assert(route.includes('slice(0,8)'),'Atualização em lote deve possuir limite de segurança.');
+assert(returnsLib.includes('const lincrosHistory=await enrichRowsWithLincrosCache(db,auditedHistory)'),'Backend deve enriquecer o histórico concluído com o cache Lincros.');
+assert(returnsLib.includes("fonte_entregas:'LINCROS'"),'Histórico deve identificar a fonte das entregas atualizadas.');
+assert(returnsApi.includes("fresh=['1','true','sim']"),'Dashboard de Retornos deve permitir ignorar cache após sincronização.');
+assert(index.includes('route.js?rev=dms-rota-v1141-login-sessao-20260924'),'Cache-busting deve publicar o novo frontend.');
+console.log('OK v1.0.131 - histórico concluído exibe e revalida entregas Lincros.');

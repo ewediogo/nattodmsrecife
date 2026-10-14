@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const lib=fs.readFileSync(new URL('../functions/_lib/lincros.js',import.meta.url),'utf8');
+const pkg=JSON.parse(fs.readFileSync(new URL('../package.json',import.meta.url),'utf8'));
+assert.equal(pkg.version,'1.0.158');
+assert(lib.includes('async function collectFutureOcRoots'), 'Deve existir reconciliação de OCs em datas futuras.');
+assert(lib.includes('if(ocTokens.length<=1)'), 'Busca D+3 deve ficar restrita ao cenário de múltiplas OCs.');
+assert(lib.includes('maxShiftDays=3'), 'Janela padrão deve chegar até D+3.');
+assert(lib.includes('for(let shift=1;shift<=Math.max(1,Number(maxShiftDays||3));shift+=1)'), 'Deve percorrer D+1, D+2 e D+3.');
+assert(lib.includes("strategy:'MULTI_OC_MULTI_DATE_RECONCILIATION'"), 'Rotas encontradas em datas diferentes devem ser consolidadas.');
+assert(lib.includes("ocs:missing.join(' / '),shiftDays:shift"), 'Datas futuras devem casar apenas as OCs ainda faltantes.');
+assert(lib.includes('aggregate.referenceDates='), 'Sincronização deve registrar as datas Lincros efetivamente reconciliadas.');
+assert(lib.includes('futureDateFallback:dateShiftDays>0'), 'Diagnóstico deve sinalizar uso de data futura.');
+console.log('OK v1.0.128 - múltiplas OCs reconciliadas até D+3');

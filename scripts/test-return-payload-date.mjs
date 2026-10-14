@@ -1,0 +1,22 @@
+import { DatabaseSync } from 'node:sqlite';
+import { readFile, readdir } from 'node:fs/promises';
+import { join } from 'node:path';
+import assert from 'node:assert/strict';
+import { saveReturn } from '../functions/_lib/return.js';
+const root=new URL('..',import.meta.url).pathname.replace(/\/$/,'');
+const sqlite=new DatabaseSync(':memory:');
+for(const file of (await readdir(join(root,'migrations'))).filter(x=>x.endsWith('.sql')&&!/import_/i.test(x)).sort()) sqlite.exec(await readFile(join(root,'migrations',file),'utf8'));
+function makeStatement(sql){let values=[];const api={bind(...args){values=args;return api;},async first(){return sqlite.prepare(sql).get(...values)||null;},async all(){return {results:sqlite.prepare(sql).all(...values)};},async run(){const info=sqlite.prepare(sql).run(...values);return {success:true,meta:{changes:Number(info.changes||0),last_row_id:Number(info.lastInsertRowid||0)}};}};return api;}
+const db={prepare:makeStatement,async batch(stmts){sqlite.exec('BEGIN');try{const out=[];for(const s of stmts)out.push(await s.run());sqlite.exec('COMMIT');return out;}catch(e){sqlite.exec('ROLLBACK');throw e;}}};
+const user={id:1,name:'TESTE',email:'teste@local',role:'ADMIN',perfil:'ADMIN',permissions:['*'],bases:['route']};
+const schedule={data:'2026-08-22',sequencia:'1',ocs:'OC-TESTE',qtd_entregas:12,peso_t:4.5,rota:'AG2 BOM CONSELHO',regiao:'AG2',placa:'BBB2B22',motorista:'MOTORISTA NOVO',status:'EM ROTA'};
+const info=sqlite.prepare(`INSERT INTO ROUTE_RECORDS(MODULE,TITLE,STATUS,DATE_KEY,DATA_JSON) VALUES('schedule',?,?,?,?)`).run(schedule.rota,schedule.status,schedule.data,JSON.stringify(schedule));
+const scheduleId=String(info.lastInsertRowid);
+sqlite.prepare(`INSERT INTO ROUTE_DEPARTURES(SCHEDULE_ID,DATE_KEY,STATUS,PLATE,DRIVER_NAME,ROUTE,PLANNED_AT,ACTUAL_AT,DELAY_MINUTES,DATA_JSON) VALUES(?,?,?,?,?,?,?,?,?,?)`).run(scheduleId,schedule.data,'SAIU',schedule.placa,schedule.motorista,schedule.rota,'2026-08-22T06:00','2026-08-22T06:15',15,JSON.stringify({schedule_record_id:scheduleId,data:schedule.data,status:'SAIU',status_saida:'SAIU',hora_programada:'06:00',hora_real:'06:15',placa:schedule.placa,motorista:schedule.motorista,rota:schedule.rota}));
+const result=await saveReturn(db,user,{schedule_record_id:scheduleId,storage:'ROUTE_RECORDS',schedule_storage:'ROUTE_RECORDS',data:'2026-08-22',placa:schedule.placa,rota:schedule.rota,motorista:schedule.motorista,ocs:schedule.ocs,retorno_real:'2026-08-22T14:12',origem:'MANUAL',voltou_com_devolucao:true,qtd_devolucoes:1,apoiou_alguem:true,qtd_apoios_rota:1},null);
+assert.equal(result.record.schedule_record_id,scheduleId);
+assert.equal(result.record.retorno_real,'2026-08-22T14:12');
+assert.equal(result.record.apoios,1);
+assert.equal(result.record.devolucoes,1);
+assert.equal(result.record.status,'FINALIZADO');
+console.log('OK: retorno novo preserva payload quando o campo data é uma string de data.');

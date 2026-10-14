@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));
+const js=fs.readFileSync('public/assets/route.js','utf8');
+const css=fs.readFileSync('public/assets/app.css','utf8');
+assert.equal(pkg.version,'1.0.158');
+assert(js.includes("enhanceIndicatorAnalysis('route-indicators')"),'Indicadores deve receber filtro analítico');
+assert(js.includes("enhanceIndicatorAnalysis('departure-indicators')"),'Indicadores de Saída deve receber filtro analítico');
+assert(js.includes("enhanceIndicatorAnalysis('management-indicators')"),'Dados Gerenciais deve receber filtro analítico');
+assert(js.includes('Todos os indicadores'),'Filtro deve permitir visão de todos os indicadores');
+assert(js.includes('Exportar dados'),'Tabelas devem receber exportação contextual');
+assert(js.includes('− Minimizar')&&js.includes('+ Expandir'),'Blocos devem permitir minimizar e expandir');
+assert(js.includes('natto_dms_indicator_ui_'),'Preferências devem ser persistidas no navegador');
+assert(css.includes('.indicator-topic-hidden'),'CSS deve ocultar somente análises filtradas');
+assert(css.includes('.indicator-panel-collapsed'),'CSS deve suportar painel recolhido');
+console.log('OK v1.0.126: filtro por indicador, cards gerais preservados, exportação e minimizar/expandir validados.');

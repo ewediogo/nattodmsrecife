@@ -1,0 +1,10 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';
+const lib=fs.readFileSync(new URL('../functions/_lib/lincros.js',import.meta.url),'utf8');
+const api=fs.readFileSync(new URL('../functions/api/lincros.js',import.meta.url),'utf8');
+assert(lib.includes('function addDaysIso(value,days=1)'), 'Deve haver cálculo seguro de D+1.');
+assert(lib.includes("prefix=Number(shiftDays||1)===1?'NEXT_DAY'")&&lib.includes('strategy:`${prefix}_OC_NF_MATCH`'), 'D+1 deve exigir correspondência de OC/NF quando disponível.');
+assert(lib.includes("ensureDailyLincrosSnapshot(db,env,nextDate"), 'Fallback deve consultar snapshot do dia seguinte.');
+assert(lib.includes('matchedDate=nextDate;dateShiftDays=1'), 'Sincronização deve registrar que encontrou a rota em D+1.');
+assert(lib.includes("!ocSet.size&&source.length===1"), 'Sem OC/NF, D+1 só pode aceitar rota única da placa.');
+assert(api.includes('nextDayFallback'), 'Diagnóstico deve mostrar tentativa no dia seguinte.');
+console.log('OK v1.0.126 - fallback Lincros D+1 com validação por placa e OC/NF');

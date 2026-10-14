@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+const w=fs.readFileSync(new URL('../wrangler.toml',import.meta.url),'utf8');
+const worker=fs.readFileSync(new URL('../public/_worker.js',import.meta.url),'utf8');
+const pkg=JSON.parse(fs.readFileSync(new URL('../package.json',import.meta.url),'utf8'));
+const assert=(c,m)=>{if(!c)throw new Error(m);};
+assert(/^name = "nattodms-recife"$/m.test(w),'Wrangler deve apontar para o projeto Pages nattodms-recife.');
+assert(!/^keep_vars\s*=/m.test(w),'keep_vars não deve ser usado no Wrangler do Pages.');
+assert(w.includes('pages_build_output_dir = "public"'),'Diretório Pages incorreto.');
+assert(pkg.version==='1.0.158','Versão incorreta.');
+assert(worker.includes("const VERSION='1.0.158';"),'Versão do worker incorreta.');
+console.log('OK v1.0.103: Wrangler alinhado ao Pages nattodms-recife.');

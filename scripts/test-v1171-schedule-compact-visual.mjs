@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const css=fs.readFileSync(new URL('../public/assets/app.css',import.meta.url),'utf8');
+const js=fs.readFileSync(new URL('../public/assets/route.js',import.meta.url),'utf8');
+assert(js.includes('data-route-schedule-summary data-status="'),'cartão da Escala carrega o status para colorir');
+assert(js.includes("compactRowEl.dataset.status=normalize(current.status||'PROGRAMADO')"),'status do cartão acompanha a edição');
+assert(!js.includes('Ver modelo da planilha')&&!js.includes('Você pode colar SEQ'),'texto de ajuda abaixo de Planejamento removido');
+assert(css.includes('Editando rota')&&css.includes('grid-template-columns:repeat(12,minmax(0,1fr))!important'),'formulário de edição organizado em 12 colunas');
+assert(css.includes('is-editing>td{max-width:none!important}'),'campos de edição ocupam a largura da área');
+assert(js.includes('<tr data-route-schedule-row data-status='),'linha em edição carrega o status');
+for(const status of ['EM ROTA','PERNOITE','PROGRAMADO','ESCALADO','FINALIZADO','CANCELADO'])assert(css.includes(`.schedule-compact-row[data-status="${status}"]`),`cor do status ${status}`);
+assert(css.includes('-webkit-line-clamp:2'),'nomes em até 2 linhas, sem reticências');
+assert(css.includes('@media(min-width:921px){'),'colunas de desktop só acima de 920 px');
+assert(css.includes('.schedule-compact-row>.schedule-compact-helpers.schedule-compact-field:nth-of-type(5){grid-area:helpers!important}'),'ajudantes não ocupam a área do horário em telas estreitas');
+assert(css.includes('[data-status="EM ROTA"]{--st:#eab308}'),'EM ROTA amarelo');
+assert(css.includes('{--st:#3b82f6}')&&css.includes('[data-status="PROGRAMADO"],.schedule-compact-row[data-status="PROGRAMADA"]{--st:#3b82f6}'),'PROGRAMADO azul');
+assert(css.includes('[data-status="FINALIZADO"],.schedule-compact-row[data-status="RETORNOU"]{--st:#22c55e}'),'FINALIZADO verde');
+console.log('OK v1171 - Escala compacta: cores por status, nomes completos, layout responsivo sem sobreposição.');

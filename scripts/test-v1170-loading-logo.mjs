@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const css=fs.readFileSync(new URL('../public/assets/app.css',import.meta.url),'utf8');
+const app=fs.readFileSync(new URL('../public/assets/app.js',import.meta.url),'utf8');
+assert(css.includes('@keyframes logo-fade'),'animação fade-in/fade-out');
+assert(css.includes(".loading-box .spinner,.page-load-state .spinner{width:92px;height:56px;border:0;border-radius:0;background:url('/assets/logo-natto.webp')"),'carregando usa a logo da Natto');
+assert(css.includes('.loading-overlay{position:fixed;top:0;right:0;bottom:0;left:var(--sidebar-width)'),'cartão centralizado na área de conteúdo');
+assert(css.includes('prefers-reduced-motion:reduce){.loading-box .spinner'),'respeita movimento reduzido');
+assert(app.includes('page-load-state is-placeholder')&&app.includes("showLoading(`Carregando ${TITLES[route]||'Rota'}...`"),'navegação mostra um único indicador central');
+console.log('OK v1170 - carregando com a logo Natto em fade, centralizado.');
+assert(css.includes('.system-view.is-sidebar-collapsed .main-area{margin-left:0!important}'),'menu recolhido sem vão entre o menu e a tela');
+console.log('OK v1170 - menu recolhido sem vão.');

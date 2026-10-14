@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const src=fs.readFileSync(new URL('../public/assets/app.js',import.meta.url),'utf8');
+assert.match(src,/root\._departureAuditNewFiles=\[\]/,'modal deve inicializar uma coleção própria de novas fotos');
+assert.match(src,/selected=\[\.\.\.selected,\.\.\.incoming\]/,'cada nova captura deve ser acrescentada às fotos já capturadas');
+assert.match(src,/changedInput\.value=''/,'input da câmera deve ser limpo depois da captura para permitir tirar outra foto');
+assert.match(src,/return Array\.isArray\(root\?\._departureAuditNewFiles\)/,'salvamento deve usar a coleção acumulada, e não apenas o FileList atual');
+assert.match(src,/data-audit-remove-new/,'deve permitir remover uma foto nova antes de salvar');
+assert.match(src,/keepPhotoIds\.length\+files\.length>5/,'limite total de cinco evidências deve permanecer');
+console.log('OK v1.0.150 - auditoria acumula várias fotos tiradas sequencialmente pela câmera.');

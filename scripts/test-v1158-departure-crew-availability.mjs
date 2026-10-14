@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const schedule=fs.readFileSync(new URL('../functions/_lib/schedule.js',import.meta.url),'utf8');
+const app=fs.readFileSync(new URL('../public/assets/app.js',import.meta.url),'utf8');
+const fn=schedule.slice(schedule.indexOf('export async function listScheduleCrewOptions'),schedule.indexOf('async function loadCatalogContext'));
+assert(fn.includes('loadOperationalContext(db,date)'));
+assert(fn.includes('decoratePlanningResources'));
+for(const prop of ['rota_atual','escala_atual_id','motivo_indisponibilidade'])assert(fn.includes(prop));
+assert(app.includes('const selectable=(available||occupied)&&!hard'));
+assert(app.includes('forcar_conflito_equipe'));
+assert(schedule.includes('if(overrideEmployeeConflicts)continue;'));
+console.log('OK bug 2 - opções consultam ocupação e exibem motivo/bloqueio duro');

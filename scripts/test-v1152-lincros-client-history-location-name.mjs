@@ -1,0 +1,21 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const read=(path)=>fs.readFileSync(new URL(`../${path}`,import.meta.url),'utf8');
+const lincrosLib=read('functions/_lib/lincros.js');
+const lincrosApi=read('functions/api/lincros.js');
+const protectsatApi=read('functions/api/protectsat.js');
+const timelineApi=read('functions/api/trip-timeline.js');
+const routeJs=read('public/assets/route.js');
+
+assert.match(lincrosApi,/enrichWithNearbyClients, recordRouteClientArrivals/,'Lincros deve reutilizar a rotina de clientes próximos/histórico.');
+assert.match(lincrosApi,/lincrosClientFallbackPositions/,'Deve existir filtro de fallback para usar Lincros apenas sem ProtectSat recente.');
+assert.match(lincrosApi,/__DMS_SOURCE\":\"LINCROS/,'Filtro deve distinguir posições Lincros das posições ProtectSat.');
+assert.match(lincrosApi,/LINCROS_CLIENT_FALLBACK_PROTECTSAT_MAX_AGE_MINUTES\|\|15/,'Janela padrão de indisponibilidade ProtectSat deve ser 15 minutos.');
+assert.match(lincrosApi,/recordRouteClientArrivals\(env\.DB,fallback\)/,'Fallback Lincros deve registrar chegada/saída de cliente no histórico.');
+assert.match(protectsatApi,/export async function enrichWithNearbyClients/,'Enriquecimento de clientes deve ser compartilhável com a Lincros.');
+assert.match(timelineApi,/ROUTE_CLIENT_ARRIVALS/,'Timeline deve continuar lendo chegadas registradas por GPS.');
+assert.match(lincrosLib,/reverseGeocode\(db,env,lat,lng\)/,'Posição Lincros deve receber nome por geocodificação reversa.');
+assert.match(lincrosLib,/locationLabel:clean\(aggregate\.locationLabel/,'Nome da localização deve persistir no resumo Lincros.');
+assert.match(lincrosLib,/ON CONFLICT\(PLATE,GPS_TIME,LATITUDE,LONGITUDE\) DO UPDATE SET/,'Posição já existente deve poder ser atualizada com o nome geocodificado.');
+assert.match(routeJs,/clientLabel\|\|String\(item\.locationLabel\|\|''\)\.trim\(\)\|\|`Lincros/,'UI deve preferir o nome da localização antes das coordenadas.');
+console.log('OK v1.0.152 - clientes próximos por fallback Lincros e localização nominal persistida.');

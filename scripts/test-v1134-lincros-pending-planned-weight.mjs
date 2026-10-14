@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+const pkg=JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8'));
+const lib=await readFile(new URL('../functions/_lib/lincros.js',import.meta.url),'utf8');
+const route=await readFile(new URL('../public/assets/route.js',import.meta.url),'utf8');
+const index=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
+assert.equal(pkg.version,'1.0.158');
+assert(lib.includes('plannedWeightFromDelivery(row)'),'Integração deve extrair peso previsto da entrega/pedido/NF.');
+assert(lib.includes('WEIGHT_PLANNED REAL'),'Banco deve armazenar peso previsto.');
+assert(lib.includes('ALTER TABLE LINCROS_DELIVERIES ADD COLUMN WEIGHT_PLANNED REAL'),'Base existente deve ser atualizada automaticamente.');
+assert(lib.includes('weightPlanned:row.WEIGHT_PLANNED'),'Cache deve devolver peso previsto ao frontend.');
+assert(route.includes('<th>Peso previsto</th><th>Peso entregue</th><th>Peso devolvido</th>'),'Tabela deve exibir peso previsto antes dos pesos realizados.');
+assert(route.includes('Peso pendente · Lincros'),'Detalhe deve consolidar o peso previsto das pendências.');
+assert(index.includes('route.js?rev=dms-rota-v1141-login-sessao-20260924'),'Frontend deve usar cache-busting da v1.0.135.');
+console.log('OK v1.0.135 - peso previsto das entregas pendentes Lincros.');

@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+const pkg=JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8'));
+const lib=await readFile(new URL('../functions/_lib/monitoring.js',import.meta.url),'utf8');
+const api=await readFile(new URL('../functions/api/monitoring.js',import.meta.url),'utf8');
+const route=await readFile(new URL('../public/assets/route.js',import.meta.url),'utf8');
+const index=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
+assert.equal(pkg.version,'1.0.158');
+assert(lib.includes("const current = await getDomainRow(db, 'monitoring', id)"),'Pernoite deve validar o registro atual no backend.');
+assert(lib.includes("['FINALIZADO','RETORNOU'].includes(currentStatus)"),'Pernoite não pode sobrescrever uma viagem já concluída.');
+assert(lib.includes('Não reaplicamos o snapshot inteiro do card'),'Implementação deve preservar atualizações concorrentes de GPS/Lincros.');
+assert(!route.includes("data:{...r,justificativa_pernoite:$('#route-overnight-reason',root).value,version:r.version}"),'Modal não deve reenviar snapshot/version antigos.');
+assert(route.includes("data:{justificativa_pernoite:justificativa}"),'Modal deve enviar somente a decisão do usuário.');
+assert(api.includes('function clearMonitoringReadCache(){monitorReadCache.clear();monitorReadInflight.clear();}'),'API deve invalidar cache do Monitoramento após escrita.');
+assert(api.includes('clearMonitoringReadCache();return jsonResponse({ok:true'),'Escrita deve limpar cache antes da resposta.');
+assert(index.includes('route.js?rev=dms-rota-v1141-login-sessao-20260924'),'Frontend deve quebrar cache para carregar o hotfix.');
+console.log('OK v1.0.135 - pernoite tolerante a atualizações concorrentes e cache de leitura invalidado.');

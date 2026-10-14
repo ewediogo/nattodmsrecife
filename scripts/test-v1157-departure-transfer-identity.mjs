@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {buildDepartureMatcher,matchDepartureToSchedule} from '../functions/_lib/departure.js';
+const rows=[{id:'d1',schedule_record_id:'a',data:'2026-10-08',sequencia:'0',rota:'A',placa:'P1'},{id:'d2',schedule_record_id:'b',data:'2026-10-08',sequencia:'0',rota:'B',placa:'P2'},{id:'d3',schedule_record_id:'c',data:'2026-10-08',sequencia:'0',rota:'C',placa:'P3'}];
+const matcher=buildDepartureMatcher(rows);
+for(let i=0;i<3;i++)assert.equal(matchDepartureToSchedule(matcher,{id:'abc'[i],data:'2026-10-08',sequencia:'0'})?.id,rows[i].id);
+assert.equal(matchDepartureToSchedule(matcher,{id:'unknown',data:'2026-10-08',sequencia:'0'}),null);
+const source=fs.readFileSync(new URL('../functions/_lib/departure.js',import.meta.url),'utf8');
+assert(source.includes('nextTransferSequence(all,existing,schedule,data)'));
+assert(source.includes("sequence!=='0'"));
+const repair=fs.readFileSync(new URL('../scripts/sql/manual/reparo_transferencia_15h.sql',import.meta.url),'utf8');
+assert(!/^\s*(BEGIN|COMMIT|ROLLBACK|SAVEPOINT)\b/im.test(repair),'D1 não aceita controle explícito de transação');
+assert(!/CREATE\s+TEMP/i.test(repair),'reparo não deve depender de tabela TEMP no D1');
+assert(repair.includes("TRANSFERIDA_DA_ESCALA"));
+console.log('OK bug 1 - IDs isolados, sequência zero ignorada, reparo manual presente');

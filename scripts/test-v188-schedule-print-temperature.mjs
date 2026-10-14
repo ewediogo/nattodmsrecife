@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const route=fs.readFileSync(new URL('../public/assets/route.js', import.meta.url),'utf8');
+const css=fs.readFileSync(new URL('../public/assets/app.css', import.meta.url),'utf8');
+assert.match(route,/Temperatura do frio \(°C\)/,'Cabeçalho da impressão deve explicitar Temperatura do frio (°C)');
+assert.match(route,/schedulePrintTemperature\(x\.temperatura_frio_c\?\?x\.TEMPERATURA_FRIO_C\)/,'Impressão deve aceitar campo moderno e legado');
+assert.match(route,/record\.temperatura_frio_c\?\?record\.TEMPERATURA_FRIO_C/,'Editor deve aceitar temperatura moderna e legada');
+assert.match(route,/class="print-temperature"/,'Célula de temperatura deve ter classe específica');
+assert.match(css,/\.print-temperature\{[^}]*font-weight:900/,'Temperatura impressa deve ficar destacada');
+console.log('v1.0.88 schedule print temperature: ok');
