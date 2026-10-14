@@ -26,12 +26,6 @@ import * as routePath from './server/functions/api/route-path.js';
 import * as tripTimeline from './server/functions/api/trip-timeline.js';
 import * as diagnostics from './server/functions/api/diagnostics.js';
 import * as integrationDiagnostics from './server/functions/api/integration-diagnostics.js';
-import * as appHealth from './server/functions/api/v1/app/health.js';
-import * as appRoutesActive from './server/functions/api/v1/app/routes-active.js';
-import * as appDeparture from './server/functions/api/v1/app/departure.js';
-import * as appMonitoring from './server/functions/api/v1/app/monitoring.js';
-import * as appReturn from './server/functions/api/v1/app/return.js';
-import * as appTimeClock from './server/functions/api/v1/app/time-clock.js';
 
 const VERSION='1.0.158';
 const exactRoutes=new Map([
@@ -42,8 +36,6 @@ const exactRoutes=new Map([
   ['/api/monitoring',monitoring],['/api/returns',returns],['/api/indicators',indicators],
   ['/api/operational-pending',operationalPending],['/api/route-dashboard',routeDashboard],['/api/route-settings',routeSettings],['/api/route-path',routePath],
   ['/api/trip-timeline',tripTimeline],['/api/diagnostics',diagnostics],['/api/integration-diagnostics',integrationDiagnostics],
-  ['/api/v1/app/health',appHealth],['/api/v1/app/routes/active',appRoutesActive],['/api/v1/app/departure',appDeparture],
-  ['/api/v1/app/monitoring',appMonitoring],['/api/v1/app/return',appReturn],['/api/v1/app/time-clock',appTimeClock],
 ]);
 const json=(body,status=200,extraHeaders={})=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json; charset=UTF-8','Cache-Control':'no-store, max-age=0','X-Content-Type-Options':'nosniff','X-Natto-Dms-Version':VERSION,...extraHeaders}});
 const normalizePath=(pathname)=>!pathname||pathname==='/'?'/':pathname.replace(/\/+$/,'');

@@ -10,9 +10,6 @@ migrations_dir = "migrations"
 
 
 [vars]
-# Integração com o NATTO Entregas. Mantenha false até validar a leitura.
-DMS_APP_WRITE_ENABLED = "false"
-# DMS_ROTA_APP_SECRET deve ser cadastrado como Secret no painel Cloudflare; nunca commitar o valor.
 PROTECTSAT_ENABLED = "true"
 PROTECTSAT_BASE_URL = "https://api.protectsat.com.br/wsprotect/protect.php"
 LINCROS_BASE_URL = "https://notaro-tracking.lincros.com"
