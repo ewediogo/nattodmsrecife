@@ -45,6 +45,9 @@ jobs:
       - name: Aviso de secrets ausentes
         if: env.CLOUDFLARE_API_TOKEN == '' || env.CLOUDFLARE_ACCOUNT_ID == ''
         run: echo "::warning::CLOUDFLARE_API_TOKEN/CLOUDFLARE_ACCOUNT_ID não configurados; deploy do cron pulado. Rode 'npm run deploy:cron' manualmente."
+      - name: Aplicar migrations pendentes no D1 (db-recife)
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        run: npm run d1:migrate
       - name: Deploy do Worker de cron
         if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
         run: npm run deploy:cron
