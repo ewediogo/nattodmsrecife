@@ -7,7 +7,7 @@ const pkg=JSON.parse(fs.readFileSync(`${root}/package.json`,'utf8'));
 const assert=(c,m)=>{if(!c)throw new Error(m);};
 assert(pkg.version==='1.0.158','Versão deve ser 1.0.102.');
 assert(!wrangler.includes('keep_vars = true'),'Wrangler Pages não deve depender de keep_vars.');
-assert(wrangler.includes('name = "nattodms-recife"'),'Wrangler deve apontar para o Pages nattodms-recife.');
+assert(wrangler.includes('name = "nattodmsrecife"'),'Wrangler deve apontar para o Pages nattodmsrecife.');
 assert(lib.includes("syncHealthy=hasSuccessfulSync&&!lastError"),'Cache Lincros precisa distinguir sincronização confirmada.');
 assert(lib.includes("STATUS_ROTA_EMPTY")&&lib.includes("STATUS_ROTA_WITHOUT_DELIVERIES"),'Resposta v4 vazia/incompleta não pode virar sucesso.');
 assert(lib.includes("if(!lincros.syncHealthy)return {...row,lincros}"),'Contagem Lincros não pode substituir DMS em cache inválido.');

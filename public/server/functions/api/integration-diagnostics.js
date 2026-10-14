@@ -18,7 +18,7 @@ export async function onRequestGet({env,request}){
     return jsonResponse({
       version:'1.0.103',generatedAt:new Date().toISOString(),runtime:{host:url.host,protocol:url.protocol,dbBound:Boolean(env.DB)},
       protectSat:{enabled:String(env.PROTECTSAT_ENABLED||'true').toLowerCase()!=='false',keyPresent:Boolean(clean(env.PROTECTSAT_CHAVE,2000)),baseHost:hostOf(env.PROTECTSAT_BASE_URL,'https://api.protectsat.com.br/wsprotect/protect.php'),functionName:clean(env.PROTECTSAT_FUNCAO||'grid_monitoramento',100),cache:gps,history:gpsPositions},
-      lincros:{apiKeyPresent:Boolean(clean(env.LINCROS_API_KEY,2000)),requiredPagesProject:'nattodms-recife',baseVarPresent:Boolean(clean(env.LINCROS_BASE_URL,1000)),baseHost:hostOf(env.LINCROS_BASE_URL,'https://notaro-tracking.lincros.com'),wsUserPresent:Boolean(clean(env.LINCROS_WS_USER,500)),wsPasswordPresent:Boolean(clean(env.LINCROS_WS_PASSWORD,500)),cache:li,recentErrors:liErrors}
+      lincros:{apiKeyPresent:Boolean(clean(env.LINCROS_API_KEY,2000)),requiredPagesProject:'nattodmsrecife',baseVarPresent:Boolean(clean(env.LINCROS_BASE_URL,1000)),baseHost:hostOf(env.LINCROS_BASE_URL,'https://notaro-tracking.lincros.com'),wsUserPresent:Boolean(clean(env.LINCROS_WS_USER,500)),wsPasswordPresent:Boolean(clean(env.LINCROS_WS_PASSWORD,500)),cache:li,recentErrors:liErrors}
     });
   }catch(error){return jsonResponse({erro:error?.message||String(error),codigo:error?.code||'INTEGRATION_DIAGNOSTIC_ERROR'},error?.status||400);}
 }
