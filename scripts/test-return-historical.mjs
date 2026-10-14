@@ -1,0 +1,21 @@
+import { DatabaseSync } from 'node:sqlite';
+import { readFile, readdir } from 'node:fs/promises';
+import { join } from 'node:path';
+import assert from 'node:assert/strict';
+import { saveReturn } from '../functions/_lib/return.js';
+const root=new URL('..',import.meta.url).pathname.replace(/\/$/,'');
+const sqlite=new DatabaseSync(':memory:');
+for(const file of (await readdir(join(root,'migrations'))).filter(x=>x.endsWith('.sql')&&!/import_/i.test(x)).sort()) sqlite.exec(await readFile(join(root,'migrations',file),'utf8'));
+let queryCount=0;
+function makeStatement(sql){let values=[];const api={bind(...args){values=args;return api;},async first(){queryCount++;return sqlite.prepare(sql).get(...values)||null;},async all(){queryCount++;return {results:sqlite.prepare(sql).all(...values)};},async run(){queryCount++;const info=sqlite.prepare(sql).run(...values);return {success:true,meta:{changes:Number(info.changes||0),last_row_id:Number(info.lastInsertRowid||0)}};}};return api;}
+const db={prepare:makeStatement,async batch(stmts){queryCount++;sqlite.exec('BEGIN');try{const out=[];for(const s of stmts)out.push(await s.run());sqlite.exec('COMMIT');return out;}catch(e){sqlite.exec('ROLLBACK');throw e;}}};
+const data={schedule_record_id:'LEGACY-MISSING-999',data:'2026-08-21',status:'FINALIZADO',origem:'MANUAL',placa:'AAA1A11',motorista:'MOTORISTA HISTORICO',rota:'AG2 BOM CONSELHO',retorno_real:'2026-08-21T14:12',saida_real:'2026-08-21T06:00',entregas:10,apoios:0,devolucoes:0,peso_t:5};
+const info=sqlite.prepare(`INSERT INTO ROUTE_RETURNS(SCHEDULE_ID,DATE_KEY,STATUS,PLATE,DRIVER_NAME,ROUTE,RETURN_AT,DATA_JSON) VALUES(?,?,?,?,?,?,?,?)`).run(data.schedule_record_id,data.data,data.status,data.placa,data.motorista,data.rota,data.retorno_real,JSON.stringify(data));
+const id=Number(info.lastInsertRowid);
+const before=queryCount;
+const result=await saveReturn(db,{id:1,name:'TESTE',email:'teste@local'}, {...data,id,apoiou_alguem:true,voltou_com_devolucao:true,qtd_apoios_rota:1,qtd_devolucoes:1,observacoes:'AJUSTE HISTORICO'}, id);
+assert.equal(result.record.apoios,1);
+assert.equal(result.record.devolucoes,1);
+assert.equal(result.skipDerivedState,true);
+assert.equal(result.record.rota,'AG2 BOM CONSELHO');
+console.log(`OK: ajuste histórico salvo sem escala original. consultas D1 simuladas=${queryCount-before}`);

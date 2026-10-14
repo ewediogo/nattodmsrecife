@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const pkg=JSON.parse(fs.readFileSync(new URL('../package.json',import.meta.url),'utf8'));
+const route=fs.readFileSync(new URL('../public/assets/route.js',import.meta.url),'utf8');
+const api=fs.readFileSync(new URL('../functions/api/returns.js',import.meta.url),'utf8');
+const lib=fs.readFileSync(new URL('../functions/_lib/return.js',import.meta.url),'utf8');
+const workerApi=fs.readFileSync(new URL('../public/server/functions/api/returns.js',import.meta.url),'utf8');
+const workerLib=fs.readFileSync(new URL('../public/server/functions/_lib/return.js',import.meta.url),'utf8');
+assert.equal(pkg.version,'1.0.158');
+assert.match(api,/action==='reopen'/);
+assert.match(lib,/export async function reopenReturn/);
+assert.match(workerApi,/action==='reopen'/,'Worker publicado precisa reconhecer action=reopen');
+assert.match(workerLib,/export async function reopenReturn/,'Worker publicado precisa conter reopenReturn');
+assert.match(route,/reopenResult\?\.reopened/,'Front-end deve exigir confirmação explícita do servidor');
+assert.match(route,/O servidor não confirmou a reabertura/);
+console.log('OK: v1.0.76 mantém Worker sincronizado e evita falso sucesso ao reabrir viagem.');

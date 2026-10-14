@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const gps=fs.readFileSync(new URL('../functions/api/protectsat.js',import.meta.url),'utf8');
+const ui=fs.readFileSync(new URL('../public/assets/route.js',import.meta.url),'utf8');
+const cron=fs.readFileSync(new URL('../workers/protectsat-cron/wrangler.toml',import.meta.url),'utf8');
+assert.match(gps,/freshestPositionsByPlate/,'ProtectSat deve deduplicar por placa usando a leitura GPS mais recente.');
+assert.match(gps,/API_FETCH_AGE_MINUTES/,'Diagnóstico deve calcular idade da última recepção por placa.');
+assert.match(gps,/apiStatus:apiFetchAgeMinutes/,'Payload deve sinalizar placa não atualizada pela API.');
+assert.match(gps,/liveProbe/,'Endpoint diagnostic deve permitir comparar cache e consulta live sem expor chave.');
+assert.match(ui,/ProtectSat sem atualizar a placa/,'Última Localização deve sinalizar falha individual da placa.');
+assert.match(cron,/DEPARTURE_GPS_MAX_AGE_MINUTES = "20"/,'Cron e Pages devem usar a mesma idade máxima GPS.');
+console.log('OK: v1.0.77 diagnostica staleness por placa, deduplica resposta ProtectSat e alinha automação GPS.');

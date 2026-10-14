@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+const root=new URL('..',import.meta.url).pathname.replace(/\/$/,'');
+const lib=fs.readFileSync(`${root}/functions/_lib/lincros.js`,'utf8');
+const route=fs.readFileSync(`${root}/public/assets/route.js`,'utf8');
+const wrangler=fs.readFileSync(`${root}/wrangler.toml`,'utf8');
+const pkg=JSON.parse(fs.readFileSync(`${root}/package.json`,'utf8'));
+const assert=(c,m)=>{if(!c)throw new Error(m);};
+assert(pkg.version==='1.0.158','Versão deve ser 1.0.102.');
+assert(!wrangler.includes('keep_vars = true'),'Wrangler Pages não deve depender de keep_vars.');
+assert(wrangler.includes('name = "nattodmsrecife"'),'Wrangler deve apontar para o Pages nattodmsrecife.');
+assert(lib.includes("syncHealthy=hasSuccessfulSync&&!lastError"),'Cache Lincros precisa distinguir sincronização confirmada.');
+assert(lib.includes("STATUS_ROTA_EMPTY")&&lib.includes("STATUS_ROTA_WITHOUT_DELIVERIES"),'Resposta v4 vazia/incompleta não pode virar sucesso.');
+assert(lib.includes("if(!lincros.syncHealthy)return {...row,lincros}"),'Contagem Lincros não pode substituir DMS em cache inválido.');
+assert(route.includes("if(item.syncHealthy!==true)return null"),'GPS Lincros deve exigir sync confirmada.');
+assert(route.includes("PROTECTSAT_CACHE"),'Última posição ProtectSat precisa ser preservada como fallback.');
+assert(route.includes("r.lincros?.syncHealthy"),'Etiqueta Lincros deve aparecer apenas em sincronização válida.');
+console.log('OK v1.0.103: cache Lincros validado, Pages alinhado e fallback ProtectSat mantido.');

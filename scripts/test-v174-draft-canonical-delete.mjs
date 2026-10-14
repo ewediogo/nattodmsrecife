@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const route=fs.readFileSync(new URL('../public/assets/route.js',import.meta.url),'utf8');
+const pkg=JSON.parse(fs.readFileSync(new URL('../package.json',import.meta.url),'utf8'));
+assert.equal(pkg.version,'1.0.158');
+assert.match(route,/scheduleDraftCanonicalIndex/);
+assert.match(route,/id:server\.id,storage:server\.storage\|\|''/);
+assert.match(route,/scheduleDraftIdentityScore/);
+assert.match(route,/Nunca deixe um rascunho\/localStorage sobrescrever o identificador canônico/);
+console.log('OK: v1.0.76 preserva ID/storage canônicos ao reconciliar rascunhos e permite excluir/cancelar linhas importadas.');

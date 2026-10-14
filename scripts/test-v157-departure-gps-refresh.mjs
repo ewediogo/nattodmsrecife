@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+const app=fs.readFileSync(new URL('../public/assets/app.js',import.meta.url),'utf8');
+const api=fs.readFileSync(new URL('../functions/api/departures.js',import.meta.url),'utf8');
+const lib=fs.readFileSync(new URL('../functions/_lib/departure.js',import.meta.url),'utf8');
+const html=fs.readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
+const assert=(value,message)=>{if(!value)throw new Error(message);};
+assert(app.includes("button.textContent='↻ Atualizando GPS...'"),'Botão não mostra processamento.');
+assert(app.includes("navigationScoped:false,timeoutMs:45000"),'Consulta live não está isolada do abort de navegação.');
+assert(app.includes('departure-gps-feedback'),'Diagnóstico do refresh GPS não é renderizado.');
+assert(app.includes('Nenhuma nova saída atingiu todos os critérios automáticos'),'Clique não informa ausência de confirmações.');
+assert(api.includes('const diagnostics=[]'),'Reconciliação não coleta diagnóstico por placa.');
+assert(api.includes('payload=reconcile?await listDepartureControlRows'),'Reconciliação ainda pode devolver leitura do Controle de Saída em cache.');
+assert(lib.includes("diagnostic('WAITING_OUTSIDE_CONFIRMATIONS'" ) || lib.includes("diagnostic(transition.reason"),'Auto saída não expõe motivo de transição pendente.');
+assert(html.includes('dms-rota-v1141-login-sessao-20260924'),'Cache-busting da v1.0.57 não aplicado.');
+console.log('v1.0.57 departure GPS refresh checks: OK');

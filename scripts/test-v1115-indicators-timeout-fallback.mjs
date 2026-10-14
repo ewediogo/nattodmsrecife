@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const route=fs.readFileSync(new URL('../public/assets/route.js',import.meta.url),'utf8');
+const indicators=fs.readFileSync(new URL('../functions/_lib/indicators.js',import.meta.url),'utf8');
+assert.match(route,/timeoutMs:45000,maxAttempts:1/,'Indicadores deve tolerar consulta completa acima de 25 s');
+assert.match(route,/fast=1/,'Indicadores deve possuir fallback rápido');
+assert.match(route,/Modo rápido:/,'Tela deve informar quando usar fallback');
+assert.match(indicators,/gpsStart:period\.start,gpsEnd:period\.end/,'GPS deve ficar restrito ao período visível');
+assert.match(indicators,/fastMode \? Promise\.resolve\(null\) : getFleetAvailabilityIndicators/,'Fallback rápido deve evitar bloco pesado de disponibilidade');
+assert.match(indicators,/includeGps:\!fastMode/,'Fallback rápido deve pular histórico GPS pesado');
+console.log('v1.0.126 indicadores timeout/fallback: OK');

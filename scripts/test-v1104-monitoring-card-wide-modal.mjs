@@ -1,0 +1,18 @@
+import fs from 'node:fs';
+const root=new URL('..',import.meta.url).pathname.replace(/\/$/,'');
+const app=fs.readFileSync(`${root}/public/assets/app.js`,'utf8');
+const route=fs.readFileSync(`${root}/public/assets/route.js`,'utf8');
+const css=fs.readFileSync(`${root}/public/assets/app.css`,'utf8');
+const worker=fs.readFileSync(`${root}/public/_worker.js`,'utf8');
+const pkg=JSON.parse(fs.readFileSync(`${root}/package.json`,'utf8'));
+const assert=(c,m)=>{if(!c)throw new Error(m);};
+assert(pkg.version==='1.0.158','Versão deve ser 1.0.104.');
+assert(worker.includes("const VERSION='1.0.158'"),'Worker deve publicar 1.0.104.');
+assert(app.includes("wide=false")&&app.includes("modal-wide"),'Modal precisa suportar modo amplo.');
+assert(route.includes("wide:true"),'Detalhes do Monitoramento devem abrir em modal amplo.');
+assert(route.includes('data-route-monitor-deliveries'),'Card deve expor o contador de entregas para atualização em tempo real.');
+assert(route.includes('applyLincrosMonitoringResult'),'Resultado Lincros deve atualizar o card já renderizado.');
+assert(route.includes('data-monitor-detail-deliveries')&&route.includes('data-monitor-detail-pending'),'Resumo do modal deve atualizar após sincronização.');
+assert(css.includes('.modal.modal-wide{width:min(1260px,calc(100vw - 32px))'),'Modal amplo deve aproveitar a largura da tela.');
+assert(css.includes('.modal.modal-wide .lincros-delivery-table'),'Tabela Lincros precisa de regra própria no modal amplo.');
+console.log('OK v1.0.104: card Lincros atualizado após sync e janela de detalhes ampliada.');

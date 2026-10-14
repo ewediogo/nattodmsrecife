@@ -1,0 +1,14 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';
+const li=fs.readFileSync(new URL('../functions/_lib/lincros.js',import.meta.url),'utf8');
+const ind=fs.readFileSync(new URL('../functions/_lib/indicators.js',import.meta.url),'utf8');
+const ui=fs.readFileSync(new URL('../public/assets/route.js',import.meta.url),'utf8');
+assert(li.includes('advanceMonitoringAfterLastDelivery'),'Sincronização deve possuir avanço automático após última entrega.');
+assert(li.includes("status:'EM RETORNO',status_monitoramento:'EM RETORNO'"),'Última entrega deve avançar para EM RETORNO.');
+assert(li.includes("motivo_transicao_automatica:'ULTIMA_ENTREGA_APONTADA'"),'Mudança automática deve ficar identificada.');
+assert(ui.includes('<dt>Entregas</dt>'),'Monitoramento deve manter progresso compacto no card.');
+assert(ui.includes('data-route-monitor-deliveries'),'Card deve manter o gancho para atualização automática do progresso.');
+assert(ind.includes('getDeliveryPointingUsersIndicator'),'Indicadores devem calcular usuários apontando.');
+assert(ind.includes('pointingUsersPercent'),'Indicadores devem expor percentual de usuários apontando.');
+assert(ui.includes('Acompanhamento de apontamento por usuário'),'Tela deve trazer relação auditável por usuário.');
+assert(ui.includes('NÃO APONTANDO'),'Relação deve destacar quem não está apontando.');
+console.log('OK v1.0.126 - última entrega, Monitoramento compacto e usuários apontando');

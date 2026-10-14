@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+const route=await readFile(new URL('../public/assets/route.js',import.meta.url),'utf8');
+const monitoring=await readFile(new URL('../functions/_lib/monitoring.js',import.meta.url),'utf8');
+const perf=await readFile(new URL('../functions/_lib/performance.js',import.meta.url),'utf8');
+const api=await readFile(new URL('../functions/api/monitoring.js',import.meta.url),'utf8');
+const migration=await readFile(new URL('../migrations/0038_monitoring_timeout_recovery.sql',import.meta.url),'utf8');
+assert(route.includes('/api/monitoring?operational=1&recentDays=3&lite=1&activeOnly=1'));
+assert(monitoring.includes("WHERE STATUS IN (${marks})"));
+assert(monitoring.includes("const activeStatuses=['EM ROTA','PERNOITE','RETORNO PREVISTO','EM RETORNO','NO DESTINO','DESCARREGADO']"));
+assert(perf.includes('IDX_ROUTE_GPS_RET_DATE_ACTIVE'));
+assert(perf.includes('IDX_ROUTE_GPS_OCC_DATE_TYPE'));
+assert(api.includes('await ensurePerformanceIndexes(env.DB)'));
+assert(migration.includes('IDX_ROUTE_GPS_RET_DATE_ACTIVE'));
+assert(migration.includes('IDX_ROUTE_GPS_OCC_DATE_TYPE'));
+console.log('OK - recuperação do timeout do Monitoramento e índices críticos GPS.');

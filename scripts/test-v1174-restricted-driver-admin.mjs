@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const s=fs.readFileSync('functions/_lib/schedule.js','utf8');
+assert.match(s,/restricao_motorista&&!schedule\.carga_fechada&&!administrativeService/,'motorista com restrição pode ser escalado em serviço administrativo/outros');
+assert.match(s,/restricao_motorista&&!schedule\.carga_fechada&&!schedule\.servico_administrativo/,'escala automática também libera administrativo para motorista restrito');
+console.log('OK v1174 - motorista com restrição liberado para serviço administrativo/outros.');
+assert.match(s,/planDriverStrict=Boolean\(plan&&allocationPlanDriverEntries/,'escala automática segue o plano de alocação de forma exclusiva');
+assert.match(s,/if\(!h1&&!plan\)\{/,'sem ajudante fixo no plano, ajudante fica vazio');
+assert.match(s,/return allocationPlanVacationTriggered\(plan,context,date\);/,'aviso de motorista fora da placa some quando o do plano está de férias');
+const rt=fs.readFileSync('public/assets/route.js','utf8');
+assert.match(rt,/data-plan-principal/,'principal da placa aparece como observação abaixo da placa na escala');
+assert.match(rt,/\['FERIAS','FÉRIAS','RESERVADO'\]/,'principal em férias ou reservado valida o plano para qualquer motorista');
+assert.match(s,/entry\.kind==='PRINCIPAL'\)\.some/,'gatilho considera apenas o motorista principal');
+assert.match(s,/availabilityType==='MOTORISTA'\|\|availabilityType==='AJUDANTE'\)&&pendingPriorPlanning/,'motorista escalado em dia anterior sem saída fica indisponível (exceto administrativo)');
+assert.match(s,/status='ESCALADO'/,'motorista com escala pendente de dia anterior aparece como ESCALADO');
+assert.match(rt,/scheduleBusyBlock/,'seletor bloqueia (cinza) motorista/ajudante já escalado, exceto serviço administrativo/outros');
+assert.match(s,/availabilityType==='MOTORISTA'\|\|availabilityType==='AJUDANTE'/,'ajudante escalado em dia anterior sem saída também fica indisponível');

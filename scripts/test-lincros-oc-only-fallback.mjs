@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const lib=fs.readFileSync(new URL('../functions/_lib/lincros.js',import.meta.url),'utf8');
+assert(lib.includes('async function dayRoutesByDate'), 'Deve existir leitura do snapshot diário sem filtro de placa.');
+assert(lib.includes('function loadReferenceSet'), 'Deve identificar referências explícitas de OC/carga.');
+assert(lib.includes('async function collectOcOnlyRoots'), 'Deve existir fallback somente por OC.');
+assert(lib.includes('const shifts=[0];for(let distance=1;distance<=window;distance+=1)shifts.push(-distance,distance);'), 'Fallback por OC deve alternar D-5 e D+5 pela proximidade da data.');
+assert(lib.includes('maxShiftDays=5'), 'Fallback por OC deve usar janela padrão de cinco dias.');
+assert(lib.includes('maxShiftDays:5'), 'Sincronização deve solicitar busca OC-only em D-5 a D+5.');
+assert(lib.includes("strategy:'OC_ONLY_REFERENCE_MATCH'"), 'Sincronização deve registrar vínculo por OC.');
+assert(lib.includes('wrongPlate&&!ocOnlyMatch'), 'Divergência de placa só pode ser tolerada no fallback explícito por OC.');
+assert(lib.includes("!String(chosen.strategy||'').startsWith('OC_ONLY_')"), 'Fallback por OC não deve ser misturado depois com reconciliação por placa.');
+assert(lib.includes('pastDateFallback:dateShiftDays<0'), 'Diagnóstico deve identificar correspondência em data anterior.');
+assert(lib.includes('addDaysIso(date,-5)'), 'Mensagem de diagnóstico deve considerar cinco dias antes.');
+assert(lib.includes('addDaysIso(date,5)'), 'Mensagem de diagnóstico deve considerar cinco dias depois.');
+console.log('OK - fallback Lincros somente por OC validado em D-5 a D+5.');

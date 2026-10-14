@@ -1,0 +1,53 @@
+# Testa o projeto e publica o Worker de cron (ProtectSat + reprogramação das 15h).
+# A integração GitHub -> Cloudflare Pages publica apenas o site; este Worker é
+# separado e, sem este workflow, continuaria rodando código antigo.
+#
+# Pré-requisito (GitHub > Settings > Secrets and variables > Actions):
+#   CLOUDFLARE_API_TOKEN  - token com permissão "Workers Scripts:Edit" e "D1:Edit"
+#   CLOUDFLARE_ACCOUNT_ID - ID da conta Cloudflare
+# Sem esses secrets os testes rodam normalmente e o deploy é apenas pulado.
+name: Testes e deploy do cron
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-cron
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run build
+      - name: Cópia do servidor sincronizada
+        run: git diff --exit-code -- public/server || (echo "::error::public/server está desatualizado. Rode 'npm run build' e faça commit." && exit 1)
+      - run: npm run check
+      - run: npm test
+
+  deploy-cron:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Aviso de secrets ausentes
+        if: env.CLOUDFLARE_API_TOKEN == '' || env.CLOUDFLARE_ACCOUNT_ID == ''
+        run: echo "::warning::CLOUDFLARE_API_TOKEN/CLOUDFLARE_ACCOUNT_ID não configurados; deploy do cron pulado. Rode 'npm run deploy:cron' manualmente."
+      - name: Aplicar migrations pendentes no D1 (db-recife)
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        run: npm run d1:migrate
+      - name: Deploy do Worker de cron
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        run: npm run deploy:cron

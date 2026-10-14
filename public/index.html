@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b6b35">
+  <meta name="description" content="Natto DMS - Recife — gestão operacional de rotas da Natto Alimentos.">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Natto DMS - Recife</title>
+  <link rel="icon" type="image/png" href="/assets/favicon-natto.png">
+  <link rel="apple-touch-icon" href="/assets/favicon-natto.png">
+  <link rel="stylesheet" href="/assets/app.css?rev=dms-rota-v1141-login-sessao-20260924-dms-rota-v1156-indicadores-historico-20261006-dms-rota-v1158-controle-saida-20261008">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css">
+</head>
+<body>
+  <div id="app-root">
+    <section id="auth-view" class="auth-view">
+      <button class="theme-toggle auth-theme no-print" type="button" data-theme-toggle aria-label="Alternar tema">
+        <span class="theme-toggle-icon" aria-hidden="true"></span><span class="theme-label">Modo claro</span>
+      </button>
+      <div class="auth-shell">
+        <aside class="auth-hero">
+          <div class="auth-hero-brand">
+            <img src="/assets/logo-natto.webp" alt="Natto Alimentos" class="auth-logo">
+            <div><span class="product-name">DMS ROTA</span><span class="version-chip">1</span></div>
+          </div>
+          <div class="auth-hero-copy">
+            <span class="eyebrow eyebrow-light">CENTRAL OPERACIONAL</span>
+            <h1>DMS ROTA</h1>
+            <p>Gestão operacional de distribuição, frota e equipes da Natto Alimentos.</p>
+          </div>
+          <div class="auth-feature-grid enterprise-login-features" aria-label="Recursos do sistema">
+            <article><i data-lucide="calendar-range"></i><div><strong>Planejamento</strong><small>Escala de equipes, frota e regras operacionais.</small></div></article>
+            <article><i data-lucide="radar"></i><div><strong>Operação</strong><small>Saídas, monitoramento e retornos em um só fluxo.</small></div></article>
+            <article><i data-lucide="chart-no-axes-combined"></i><div><strong>Gestão</strong><small>Indicadores, produtividade e recursos.</small></div></article>
+          </div>
+          <div class="auth-hero-footer">Natto Alimentos · Logística e Distribuição</div>
+        </aside>
+
+        <main class="auth-panel">
+          <div class="auth-panel-head">
+            <span class="eyebrow">ACESSO SEGURO</span>
+            <h2>Entrar no DMS ROTA</h2>
+            <p>Use seu e-mail corporativo ou matrícula e senha.</p>
+          </div>
+
+          <form id="setup-form" class="form-stack is-hidden" autocomplete="on">
+            <div class="notice notice-info"><strong>Configuração inicial</strong><span>O banco está vazio. Crie o primeiro administrador.</span></div>
+            <label class="field"><span>Nome do administrador</span><input id="setup-name" required maxlength="120" autocomplete="name"></label>
+            <label class="field"><span>E-mail</span><input id="setup-email" type="email" autocomplete="email" placeholder="nome@empresa.com.br"></label>
+            <label class="field"><span>Matrícula</span><input id="setup-matricula" autocomplete="username"></label>
+            <small>Informe pelo menos e-mail ou matrícula.</small>
+            <label class="field"><span>Senha</span><div class="password-field"><input id="setup-password" type="password" required minlength="8" autocomplete="new-password"><button type="button" data-password-toggle="setup-password">Exibir</button></div><small>Mínimo de 8 caracteres, com maiúscula, minúscula, número e símbolo.</small></label>
+            <button class="btn btn-primary btn-block btn-lg" type="submit">Criar administrador</button>
+          </form>
+
+          <form id="login-form" class="form-stack" autocomplete="on">
+            <label class="field"><span>E-mail ou matrícula</span><input id="login-identity" required autocomplete="username"></label>
+            <label class="field"><span>Senha</span><div class="password-field"><input id="login-password" type="password" required autocomplete="current-password"><button type="button" data-password-toggle="login-password">Exibir</button></div></label>
+            <button class="btn btn-primary btn-block btn-lg" type="submit">Entrar no sistema</button>
+          </form>
+          <div id="auth-message" class="form-message" role="alert"></div>
+          <div class="auth-security-note"><span aria-hidden="true">●</span> Sessão protegida por token com validade de 8 horas.</div>
+          <div class="version-label">Versão 1 - DMS ROTA</div>
+        </main>
+      </div>
+    </section>
+
+    <section id="system-view" class="system-view is-hidden">
+      <aside id="sidebar" class="sidebar no-print" aria-label="Menu principal">
+        <div class="sidebar-brand">
+          <img src="/assets/logo-natto.webp" alt="Natto Alimentos" class="sidebar-logo">
+          <div class="sidebar-brand-copy"><strong>NATTO DMS</strong><small>Notaro Alimentos - Recife/PE</small></div>
+          <button id="sidebar-collapse-toggle" class="icon-button desktop-only" type="button" aria-label="Recolher menu"><i data-lucide="panel-left-close"></i></button>
+        </div>
+        <nav id="main-navigation" class="main-navigation"></nav>
+        <div class="sidebar-footer sidebar-profile">
+          <div class="user-compact" title="Meu perfil"><div class="avatar" id="sidebar-avatar">U</div><div><strong id="sidebar-user-name">Usuário</strong><small id="sidebar-user-profile">Perfil</small></div></div>
+          <div class="sidebar-footer-actions"><button id="change-password-button" class="icon-button sidebar-action" type="button" title="Meu perfil" aria-label="Meu perfil"><i data-lucide="user-round-cog"></i><span>Meu perfil</span></button><button id="logout-button" class="icon-button sidebar-action" type="button" title="Sair" aria-label="Sair"><i data-lucide="log-out"></i><span>Sair</span></button></div>
+        </div>
+      </aside>
+      <div id="sidebar-backdrop" class="sidebar-backdrop no-print"></div>
+
+      <main class="main-area">
+        <header class="topbar no-print">
+          <div class="topbar-left"><button id="menu-toggle" class="icon-button mobile-only" type="button" aria-label="Abrir menu"><i data-lucide="menu"></i></button><div class="topbar-copy"><span id="page-eyebrow" class="eyebrow">Rota</span><h2 id="page-title">Visão Geral</h2></div></div>
+          <div class="topbar-actions">
+            <button class="theme-toggle" type="button" data-theme-toggle><span class="theme-toggle-icon"></span><span class="theme-label">Modo claro</span></button>
+            <span id="connection-status" class="connection-status"><i></i><span>Online</span></span>
+            <button id="refresh-button" class="icon-button" type="button" title="Atualizar dados"><i data-lucide="refresh-cw"></i></button>
+          </div>
+        </header>
+
+        <div class="print-header print-only"><img src="/assets/logo-natto.webp" alt="Natto"><div><strong id="print-title">DMS ROTA · Relatório</strong><span>Versão 1 - DMS ROTA · Emitido em <span id="print-date"></span></span></div></div>
+        <div id="page-content" class="page-content" tabindex="-1"></div>
+        <footer class="app-footer no-print"><span>NATTO DMS • RECIFE/PE</span><span>Notaro Alimentos LTDA. - RECIFE/PE • Avenida da Recuperação, Km 56,2, S/N, Guabiraba, Recife - PE, 52291-800 • 2026 © Todos os direitos reservados.</span></footer>
+      </main>
+    </section>
+  </div>
+
+  <div id="global-loading" class="loading-overlay is-hidden" aria-live="polite"><div class="loading-box" role="status"><div class="spinner" aria-hidden="true"></div><div class="loading-copy"><strong id="loading-title">Carregando</strong><span id="loading-detail">Processando dados...</span></div></div></div>
+  <div id="toast-region" class="toast-region" aria-live="polite"></div>
+  <div id="modal-root"></div>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script defer src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+  <script defer src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.1.4/leaflet-maplibre-gl.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script defer src="/assets/app.js?rev=dms-rota-v1141-login-sessao-20260924-dms-rota-v1156-indicadores-historico-20261006-dms-rota-v1158-controle-saida-20261008"></script>
+  <script defer src="/assets/route.js?rev=dms-rota-v1141-login-sessao-20260924-dms-rota-v1156-indicadores-historico-20261006-dms-rota-v1158-controle-saida-20261008"></script>
+</body>
+</html>

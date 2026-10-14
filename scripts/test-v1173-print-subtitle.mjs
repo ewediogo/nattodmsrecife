@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+const s = fs.readFileSync('public/assets/route.js','utf8');
+if (s.includes('ordenada por sequência de carregamento')) throw new Error('subtítulo antigo ainda presente');
+if (!s.includes('veículo(s)</p>')) throw new Error('subtítulo do relatório ausente');
+console.log('v1173 print subtitle ok');
+const app = fs.readFileSync('public/assets/app.js','utf8');
+if ((app.match(/data-delivery-only/g)||[]).length < 9) throw new Error('campos de entrega devem ser ocultáveis para serviço administrativo');
+const app2=fs.readFileSync('public/assets/app.js','utf8');if(app2.includes("'Visão Geral','layout-dashboard'"))throw new Error('menu Visão Geral deve ser removido');if(!app2.includes("route:'route_summary'"))throw new Error('rota inicial deve ser o Resumo');
+const html=fs.readFileSync('public/index.html','utf8');
+if(html.indexOf('id="main-navigation"')>html.indexOf('sidebar-profile'))throw new Error('perfil deve ficar abaixo do menu');
+if(!app.includes('data-nav-group'))throw new Error('grupos do menu devem ser recolhíveis');

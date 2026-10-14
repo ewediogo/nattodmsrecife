@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const js=fs.readFileSync(new URL('../public/assets/route.js',import.meta.url),'utf8');
+const css=fs.readFileSync(new URL('../public/assets/app.css',import.meta.url),'utf8');
+const html=fs.readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
+assert.match(js,/data-route-summary-work="driver"/);
+assert.match(js,/data-route-summary-helpers/);
+assert.match(js,/scheduleCompactWorkLight/);
+assert.match(js,/scheduleCompactHelpers/);
+assert.match(js,/scheduleRecordStarted/);
+assert.match(css,/v1\.0\.47 - farol visível também no card compacto/);
+assert.match(css,/schedule-work-light-compact/);
+assert.match(css,/schedule-compact-helper-person/);
+assert.match(html,/dms-rota-v1141-login-sessao-20260924/);
+console.log('OK: farol de motorista e ajudantes visível no card compacto, com diferenciação entre viagem iniciada e programação.');
