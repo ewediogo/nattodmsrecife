@@ -1,6 +1,6 @@
 -- REPARO MANUAL (não é migration: NÃO colocar em migrations/).
 -- Executar APENAS depois de revisar o resultado de diagnostico_transferencia_15h.sql:
---   npx wrangler d1 execute nattodms-recife-rotadb --remote --file=scripts/sql/manual/reparo_transferencia_15h.sql
+--   npx wrangler d1 execute db-recife --remote --file=scripts/sql/manual/reparo_transferencia_15h.sql
 -- Em seguida, rodar o diagnóstico de novo: o esperado é ZERO linhas.
 --
 -- Corrige somente escalas transferidas (TRANSFERIDA_DA_ESCALA) do dia corrente

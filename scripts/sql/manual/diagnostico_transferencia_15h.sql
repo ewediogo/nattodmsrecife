@@ -1,6 +1,6 @@
 -- Diagnóstico SOMENTE LEITURA (não é migration: NÃO colocar em migrations/).
 -- Escopo: dia corrente em America/Recife. Executar antes e depois do reparo:
---   npx wrangler d1 execute nattodms-recife-rotadb --remote --file=scripts/sql/manual/diagnostico_transferencia_15h.sql
+--   npx wrangler d1 execute db-recife --remote --file=scripts/sql/manual/diagnostico_transferencia_15h.sql
 -- Depois do reparo, o resultado esperado é ZERO linhas. Não exclui nem altera dados.
 WITH escalas AS (
  SELECT 'ESCALAS_DIA' fonte, ID id, DATA data, SEQUENCIA_CARREGAMENTO sequencia, ROTA rota, PLACA placa, OBSERVACOES observacoes FROM ESCALAS_DIA

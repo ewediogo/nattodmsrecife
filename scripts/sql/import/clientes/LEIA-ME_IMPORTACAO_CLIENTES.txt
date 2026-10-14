@@ -3,19 +3,19 @@ DMS ROTA — BASE DE CLIENTES DIVIDIDA EM 5 PARTES
 Execute na ordem:
 
 01:
-npx wrangler d1 execute nattodms-recife-rotadb --remote --file=IMPORTAR_CLIENTES_PARTE_01_DE_05.sql
+npx wrangler d1 execute db-recife --remote --file=IMPORTAR_CLIENTES_PARTE_01_DE_05.sql
 
 02:
-npx wrangler d1 execute nattodms-recife-rotadb --remote --file=IMPORTAR_CLIENTES_PARTE_02_DE_05.sql
+npx wrangler d1 execute db-recife --remote --file=IMPORTAR_CLIENTES_PARTE_02_DE_05.sql
 
 03:
-npx wrangler d1 execute nattodms-recife-rotadb --remote --file=IMPORTAR_CLIENTES_PARTE_03_DE_05.sql
+npx wrangler d1 execute db-recife --remote --file=IMPORTAR_CLIENTES_PARTE_03_DE_05.sql
 
 04:
-npx wrangler d1 execute nattodms-recife-rotadb --remote --file=IMPORTAR_CLIENTES_PARTE_04_DE_05.sql
+npx wrangler d1 execute db-recife --remote --file=IMPORTAR_CLIENTES_PARTE_04_DE_05.sql
 
 05:
-npx wrangler d1 execute nattodms-recife-rotadb --remote --file=IMPORTAR_CLIENTES_PARTE_05_DE_05.sql
+npx wrangler d1 execute db-recife --remote --file=IMPORTAR_CLIENTES_PARTE_05_DE_05.sql
 
 Os arquivos usam ON CONFLICT(ID) DO UPDATE.
 Isso permite reexecutar uma parte sem duplicar os clientes.

@@ -5,7 +5,7 @@ export async function onRequestGet(context) {
   return appJson({
     ok:true,
     service:'DMS-Rota API para NATTO Entregas',
-    database:'nattodms-recife-rotadb',
+    database:'db-recife',
     writeEnabled:appWritesEnabled(context.env),
     timestamp:new Date().toISOString(),
   });

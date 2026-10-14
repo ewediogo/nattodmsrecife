@@ -7,17 +7,16 @@ Operação 100% terceirizada: saída, retorno e posição vêm principalmente do
 - Marca, título, menu lateral e rodapé: Recife/PE.
 - Geofence de saída/retorno: `NOTARO ALIMENTOS LTDA. - RECIFE/PE` e `NOTARO ALIMENTOS - RECIFE/PE`
   (`wrangler.toml` e `workers/protectsat-cron/wrangler.toml`). **Confirmar o nome exato do ponto/cerca no Lincros.**
-- Projeto Pages `nattodms-recife`, Worker de cron `natto-dms-recife-protectsat-cron`, banco D1 `nattodms-recife-rotadb`.
+- Projeto Pages `nattodms-recife`, Worker de cron `natto-dms-recife-protectsat-cron`, banco D1 `db-recife`.
 - Telas removidas: Plano de Alocação, Folgas, Premiação, CAJU, CAJU - Carreteiros e Central de Recursos
   (menu, telas, endpoints, parâmetros CAJU e testes correspondentes).
 - Mantidos internamente (sem tela): `/api/resources` (fallback dos Indicadores de Saída) e as bibliotecas
   usadas pela Escala. As tabelas dos módulos removidos continuam nas migrations, vazias e inertes.
 
 ## Antes do primeiro deploy
-1. `npx wrangler@4.137.0 d1 create nattodms-recife-rotadb` e colocar o `database_id` no lugar de
-   `COLE-AQUI-O-ID-DO-D1-nattodms-recife-rotadb` nos dois `wrangler.toml`. (Nunca reutilizar o D1 de Belo Jardim.)
-2. Criar o projeto Pages `nattodms-recife` apontando para este repositório (build output `public`).
-3. Secrets no Pages e no Worker de cron: `LINCROS_API_KEY`, `LINCROS_WS_USER`, `LINCROS_WS_PASSWORD`,
+O D1 `db-recife` (id `ba903105-ecd7-4d5e-9e9c-b2b344d937c1`) já está configurado nos dois `wrangler.toml`.
+1. Confirmar que o projeto Pages `nattodms-recife` aponta para este repositório (build output `public`) e tem o binding `DB` = `db-recife`.
+2. Secrets no Pages e no Worker de cron: `LINCROS_API_KEY`, `LINCROS_WS_USER`, `LINCROS_WS_PASSWORD`,
    `DMS_ROTA_APP_SECRET` e, se usar, `PROTECTSAT_CHAVE`.
-4. `npm run d1:migrate`, depois `npm run deploy:cron`; no GitHub, secrets `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`.
-5. Importar cadastros (colaboradores, veículos, rotas, clientes) de Recife.
+3. `npm run d1:migrate`, depois `npm run deploy:cron`; no GitHub, secrets `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`.
+4. Importar cadastros (colaboradores, veículos, rotas, clientes) de Recife.

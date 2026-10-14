@@ -4,8 +4,8 @@ compatibility_date = "2026-08-01"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "nattodms-recife-rotadb"
-database_id = "COLE-AQUI-O-ID-DO-D1-nattodms-recife-rotadb"
+database_name = "db-recife"
+database_id = "ba903105-ecd7-4d5e-9e9c-b2b344d937c1"
 migrations_dir = "migrations"
 
 
